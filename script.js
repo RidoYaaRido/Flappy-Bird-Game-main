@@ -1,71 +1,82 @@
-let move_speed = 3;
+let moveSpeed = 3;
 let gravity = 0.5;
 let bird = document.querySelector('.bird');
 let img = document.getElementById('bird-1');
-let sound_point = new Audio('sounds effect/point.mp3');
-let sound_die = new Audio('sounds effect/die.mp3');
+let soundPoint = new Audio('sounds effect/point.mp3');
+let soundDie = new Audio('sounds effect/die.mp3');
 
 // Getting bird element properties
-let bird_props = bird.getBoundingClientRect();
+let birdProps = bird.getBoundingClientRect();
 
-// This method returns DOMReact -> top, right, bottom, left, x, y, width and height
+// This method returns DOMRect -> top, right, bottom, left, x, y, width, and height
 let background = document.querySelector('.background').getBoundingClientRect();
 
-let score_val = document.querySelector('.score_val');
+let scoreVal = document.querySelector('.score_val');
 let message = document.querySelector('.message');
-let score_title = document.querySelector('.score_title');
+let scoreTitle = document.querySelector('.score_title');
 
-let game_state = 'Start';
+let gameState = 'Start';
 img.style.display = 'none';
 message.classList.add('messageStyle');
 
 // Variable untuk menghitung jumlah klik
-let click_count = 0;
+let clickCount = 0;
 
-document.addEventListener('click', (e) => {
-    if (click_count < 2) {
-        click_count++;
-        if (click_count === 2) {
-            document.querySelectorAll('.pipe_sprite').forEach((e) => {
-                e.remove();
-            });
-            img.style.display = 'block';
-            bird.style.top = '40vh';
-            game_state = 'Play';
-            message.innerHTML = '';
-            score_title.innerHTML = 'Score : ';
-            score_val.innerHTML = '0';
-            message.classList.remove('messageStyle');
-            play();
-        }
+document.addEventListener('dblclick', (e) => {
+    if (gameState !== 'Play') {
+        document.querySelectorAll('.pipe_sprite').forEach((element) => {
+            element.remove();
+        });
+        img.style.display = 'block';
+        bird.style.top = '40vh';
+        gameState = 'Play';
+        message.innerHTML = '';
+        scoreTitle.innerHTML = 'Score : ';
+        scoreVal.innerHTML = '0';
+        message.classList.remove('messageStyle');
+        play();
+    } else {
+        // This is where the bird jumps
+        birdDy = -7.6;
+        img.src = 'images/Bird-2.png';
+        setTimeout(() => {
+            img.src = 'images/Bird.png';
+        }, 100);
     }
 });
 
+let birdDy = 0;
+
 function play() {
     function move() {
-        if (game_state != 'Play') return;
+        if (gameState !== 'Play') return;
 
-        let pipe_sprite = document.querySelectorAll('.pipe_sprite');
-        pipe_sprite.forEach((element) => {
-            let pipe_sprite_props = element.getBoundingClientRect();
-            bird_props = bird.getBoundingClientRect();
+        let pipeSprites = document.querySelectorAll('.pipe_sprite');
+        pipeSprites.forEach((element) => {
+            let pipeSpriteProps = element.getBoundingClientRect();
+            let birdProps = bird.getBoundingClientRect();
 
-            if (pipe_sprite_props.right <= 0) {
+            if (pipeSpriteProps.right <= 0) {
                 element.remove();
             } else {
-                if (bird_props.left < pipe_sprite_props.left + pipe_sprite_props.width && bird_props.left + bird_props.width > pipe_sprite_props.left && bird_props.top < pipe_sprite_props.top + pipe_sprite_props.height && bird_props.top + bird_props.height > pipe_sprite_props.top) {
-                    game_state = 'End';
-                    message.innerHTML = 'Game Over'.fontcolor('red') + '<br>Press Enter To Restart';
+                if (birdProps.left < pipeSpriteProps.left + pipeSpriteProps.width &&
+                    birdProps.left + birdProps.width > pipeSpriteProps.left &&
+                    birdProps.top < pipeSpriteProps.top + pipeSpriteProps.height &&
+                    birdProps.top + birdProps.height > pipeSpriteProps.top) {
+                    gameState = 'End';
+                    message.innerHTML = 'Game Over'.fontcolor('red') + '<br>Double Click To Restart';
                     message.classList.add('messageStyle');
                     img.style.display = 'none';
-                    sound_die.play();
+                    soundDie.play();
                     return;
                 } else {
-                    if (pipe_sprite_props.right < bird_props.left && pipe_sprite_props.right + move_speed >= bird_props.left && element.increase_score == '1') {
-                        score_val.innerHTML = +score_val.innerHTML + 1;
-                        sound_point.play();
+                    if (pipeSpriteProps.right < birdProps.left &&
+                        pipeSpriteProps.right + moveSpeed >= birdProps.left &&
+                        element.dataset.increaseScore === '1') {
+                        scoreVal.innerHTML = +scoreVal.innerHTML + 1;
+                        soundPoint.play();
                     }
-                    element.style.left = pipe_sprite_props.left - move_speed + 'px';
+                    element.style.left = (parseInt(element.style.left) - moveSpeed) + 'px';
                 }
             }
         });
@@ -73,84 +84,80 @@ function play() {
     }
     requestAnimationFrame(move);
 
-    let bird_dy = 0;
-    function apply_gravity() {
-        if (game_state != 'Play') return;
-        bird_dy = bird_dy + gravity;
-        document.addEventListener('keydown', (e) => {
-            if (e.key == 'ArrowUp' || e.key == ' ') {
-                img.src = 'images/Bird-2.png';
-                bird_dy = -7.6;
-            }
-        });
+    function applyGravity() {
+        if (gameState !== 'Play') return;
+        birdDy += gravity;
 
-        document.addEventListener('keyup', (e) => {
-            if (e.key == 'ArrowUp' || e.key == ' ') {
-                img.src = 'images/Bird.png';
-            }
-        });
-
-        if (bird_props.top <= 0 || bird_props.bottom >= background.bottom) {
-            game_state = 'End';
+        if (birdProps.top <= 0 || birdProps.bottom >= background.bottom) {
+            gameState = 'End';
             message.style.left = '28vw';
             window.location.reload();
             message.classList.remove('messageStyle');
             return;
         }
-        bird.style.top = bird_props.top + bird_dy + 'px';
-        bird_props = bird.getBoundingClientRect();
-        requestAnimationFrame(apply_gravity);
+        bird.style.top = (birdProps.top + birdDy) + 'px';
+        birdProps = bird.getBoundingClientRect();
+        requestAnimationFrame(applyGravity);
     }
-    requestAnimationFrame(apply_gravity);
+    requestAnimationFrame(applyGravity);
 
-    let pipe_seperation = 0;
+    let pipeSeparation = 0;
+    let pipeGap = 35;
 
-    let pipe_gap = 35;
+    function createPipe() {
+        if (gameState !== 'Play') return;
 
-    function create_pipe() {
-        if (game_state != 'Play') return;
+        if (pipeSeparation > 115) {
+            pipeSeparation = 0;
 
-        if (pipe_seperation > 115) {
-            pipe_seperation = 0;
+            let pipePosition = Math.floor(Math.random() * 43) + 8;
+            let pipeSpriteInv = document.createElement('div');
+            pipeSpriteInv.className = 'pipe_sprite';
+            pipeSpriteInv.style.top = (pipePosition - 70) + 'vh';
+            pipeSpriteInv.style.left = '100vw';
 
-            let pipe_posi = Math.floor(Math.random() * 43) + 8;
-            let pipe_sprite_inv = document.createElement('div');
-            pipe_sprite_inv.className = 'pipe_sprite';
-            pipe_sprite_inv.style.top = pipe_posi - 70 + 'vh';
-            pipe_sprite_inv.style.left = '100vw';
+            document.body.appendChild(pipeSpriteInv);
+            let pipeSprite = document.createElement('div');
+            pipeSprite.className = 'pipe_sprite';
+            pipeSprite.style.top = (pipePosition + pipeGap) + 'vh';
+            pipeSprite.style.left = '100vw';
+            pipeSprite.dataset.increaseScore = '1';
 
-            document.body.appendChild(pipe_sprite_inv);
-            let pipe_sprite = document.createElement('div');
-            pipe_sprite.className = 'pipe_sprite';
-            pipe_sprite.style.top = pipe_posi + pipe_gap + 'vh';
-            pipe_sprite.style.left = '100vw';
-            pipe_sprite.increase_score = '1';
-
-            document.body.appendChild(pipe_sprite);
+            document.body.appendChild(pipeSprite);
         }
-        pipe_seperation++;
-        requestAnimationFrame(create_pipe);
+        pipeSeparation++;
+        requestAnimationFrame(createPipe);
     }
-    requestAnimationFrame(create_pipe);
+    requestAnimationFrame(createPipe);
+
     // Event listener untuk mengklik dua kali pada kursor
-    let click_count = 0;
     document.addEventListener('click', (e) => {
-        click_count++;
-        if (click_count === 2) {
-            click_count = 0; // Reset click count
-            document.querySelectorAll('.pipe_sprite').forEach((e) => {
-                e.remove();
+        clickCount++;
+        if (clickCount === 2) {
+            clickCount = 0; // Reset click count
+            document.querySelectorAll('.pipe_sprite').forEach((element) => {
+                element.remove();
             });
             img.style.display = 'block';
             bird.style.top = '40vh';
-            game_state = 'Play';
+            gameState = 'Play';
             message.innerHTML = '';
-            score_title.innerHTML = 'Score : ';
-            score_val.innerHTML = '0';
+            scoreTitle.innerHTML = 'Score : ';
+            scoreVal.innerHTML = '0';
             message.classList.remove('messageStyle');
-            sound_die.pause(); // Pause sound die if playing
-            sound_die.currentTime = 0; // Reset sound die
+            soundDie.pause(); // Pause sound die if playing
+            soundDie.currentTime = 0; // Reset sound die
             play(); // Restart game
+        } else {
+            // Jika tidak mencapai dua kali klik, maka loncatkan burung
+            birdDy = -7.6;
+            img.src = 'images/Bird-2.png';
+            setTimeout(() => {
+                img.src = 'images/Bird.png';
+            }, 100);
         }
     });
 }
+
+// Call the play function to start the game
+play();
