@@ -1,0 +1,128 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.background {
+	height: 100vh;
+	width: 100vw;
+	background: url('images/background-img.png') no-repeat center center fixed;
+	background-size: cover;
+}
+
+.bird {
+	position: fixed;
+	top: 40vh;
+	left: 30vw;
+	z-index: 100;
+	width: 130px;
+	height: 100px;
+}
+
+.pipe_sprite {
+	position: fixed;
+	top: 40vh;
+	left: 100vw;
+	z-index: 1; /* Adjust z-index to avoid overlap */
+	height: 70vh;
+	width: 6vw;
+	background: radial-gradient(lightgreen 50%, green);
+	border: 5px solid black;
+}
+
+.message {
+	position: absolute;
+	z-index: 10;
+	color: black;
+	top: 30%;
+	left: 50%;
+	font-size: 4em;
+	transform: translate(-50%, -50%);
+	text-align: center;
+}
+
+.messageStyle {
+	background: white;
+	padding: 30px;
+	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+	border-radius: 5%;
+}
+
+.score {
+	position: fixed;
+	z-index: 10;
+	height: 10vh;
+	font-size: 10vh;
+	font-weight: 100;
+	color: white;
+	-webkit-text-stroke-width: 2px;
+	-webkit-text-stroke-color: black;
+	top: 0;
+	left: 0;
+	margin: 10px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.score_val {
+	color: gold;
+	font-weight: bold;
+}
+
+/* Media Queries for Responsiveness */
+@media only screen and (max-width: 1080px) {
+    .message{
+		font-size: 50px;
+		top: 50%;
+		white-space: nowrap;
+	}
+	.score{
+		font-size: 8vh;
+	}
+	.bird{
+		width: 120px;
+		height: 90px;
+	}
+	.pipe_sprite{
+		width: 14vw;
+	}
+}
+
+/* Additional Media Queries for Smaller Screens */
+@media only screen and (max-width: 768px) {
+    .message{
+		font-size: 30px;
+		top: 50%;
+		white-space: nowrap;
+	}
+	.score{
+		font-size: 6vh;
+	}
+	.bird{
+		width: 100px;
+		height: 80px;
+	}
+	.pipe_sprite{
+		width: 10vw;
+	}
+}
+
+/* Additional Media Queries for Smaller Screens (e.g., Mobile Devices) */
+@media only screen and (max-width: 480px) {
+    .message{
+		font-size: 20px;
+		top: 50%;
+		white-space: nowrap;
+	}
+	.score{
+		font-size: 4vh;
+	}
+	.bird{
+		width: 80px;
+		height: 60px;
+	}
+	.pipe_sprite{
+		width: 8vw;
+	}
+}
